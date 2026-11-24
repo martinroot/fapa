@@ -1,0 +1,2 @@
+# fapa.cam: xikfap scraper — ingest новых видео в каталог. Защёлка flock держит один инстанс.
+* * * * * root FAPAIO_DB_PASSWORD='REPLACE_WITH_DB_PASSWORD' /bin/bash /var/www/fapa.cam/py/xikfap_cron.sh >> /home/claude2/fapa-cam-scraper-cron.log 2>&1
