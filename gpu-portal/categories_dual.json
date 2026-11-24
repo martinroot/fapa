@@ -1,0 +1,37 @@
+[
+  {
+    "id": "couple",
+    "name": "Пара",
+    "icon": "bi-heart"
+  },
+  {
+    "id": "friends",
+    "name": "Друзья",
+    "icon": "bi-people"
+  },
+  {
+    "id": "family",
+    "name": "Семья",
+    "icon": "bi-house-heart"
+  },
+  {
+    "id": "funny",
+    "name": "Смешное",
+    "icon": "bi-emoji-laughing"
+  },
+  {
+    "id": "fantasy",
+    "name": "Фэнтези",
+    "icon": "bi-stars"
+  },
+  {
+    "id": "movie",
+    "name": "Кино-сцена",
+    "icon": "bi-film"
+  },
+  {
+    "id": "other_dual",
+    "name": "Разное",
+    "icon": "bi-three-dots"
+  }
+]

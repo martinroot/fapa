@@ -1,0 +1,31 @@
+{
+  "tabs": {
+    "main": {
+      "sections": [
+        {
+          "id": "trending",
+          "name": "Trending",
+          "icon": "flame.fill",
+          "pinned": true,
+          "items": []
+        },
+        {
+          "id": "new",
+          "name": "New",
+          "icon": "sparkles",
+          "pinned": true,
+          "items": []
+        }
+      ]
+    },
+    "video": {
+      "sections": []
+    },
+    "img2img": {
+      "sections": []
+    },
+    "dual": {
+      "sections": []
+    }
+  }
+}

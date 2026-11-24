@@ -1,0 +1,57 @@
+[
+  {
+    "id": "outfit",
+    "name": "Смена одежды",
+    "icon": "bi-bag"
+  },
+  {
+    "id": "profession",
+    "name": "Профессии",
+    "icon": "bi-briefcase"
+  },
+  {
+    "id": "male",
+    "name": "Мужские",
+    "icon": "bi-gender-male"
+  },
+  {
+    "id": "female",
+    "name": "Женские",
+    "icon": "bi-gender-female"
+  },
+  {
+    "id": "era",
+    "name": "Эпоха",
+    "icon": "bi-hourglass"
+  },
+  {
+    "id": "emotion",
+    "name": "Эмоции",
+    "icon": "bi-emoji-laughing"
+  },
+  {
+    "id": "cringe",
+    "name": "Кринж",
+    "icon": "bi-emoji-dizzy"
+  },
+  {
+    "id": "tiktok",
+    "name": "Тик-Ток Тренды",
+    "icon": "bi-phone"
+  },
+  {
+    "id": "cartoon",
+    "name": "Мультяшный",
+    "icon": "bi-stars"
+  },
+  {
+    "id": "action",
+    "name": "Экшен",
+    "icon": "bi-lightning"
+  },
+  {
+    "id": "other",
+    "name": "Разное",
+    "icon": "bi-three-dots"
+  }
+]

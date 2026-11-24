@@ -1,0 +1,282 @@
+[
+  {
+    "id": "flux2-img2img",
+    "name": "Flux 2 Image-to-Image",
+    "description": "Flux 2 Dev перерисовывает фото (img2img с reference latent). Turbo LoRA для быстрой генерации. ~20GB весов.",
+    "category": "img2img",
+    "gpu": "H200",
+    "model": "Flux 2 Dev FP8 + Turbo LoRA",
+    "avg_time_sec": 15,
+    "cost_per_run": 0.01,
+    "vast_template_hash": "b0eb4a914bfe6083ab77ae93dd969f48",
+    "workflow_file": "flux2_img2img.json",
+    "setup_script": "flux2_wan22_i2v.sh",
+    "provisioning_url": "https://raw.githubusercontent.com/martinroot/template_vast/main/flux2_wan22_i2v.sh",
+    "disk_gb": 40,
+    "weights": [
+      "text_encoders/mistral_3_small_flux2_bf16.safetensors",
+      "diffusion_models/flux2_dev_fp8mixed.safetensors",
+      "vae/flux2-vae.safetensors",
+      "loras/Flux_2-Turbo-LoRA_comfyui.safetensors"
+    ],
+    "params": {
+      "sampler": "euler",
+      "guidance": 4,
+      "turbo_lora_enabled": true,
+      "steps_turbo": 8,
+      "steps_normal": 20,
+      "megapixels": 1
+    },
+    "demo": {
+      "before_image": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=512",
+      "after_image": null,
+      "prompt": "identical person same face, evening dress, night city background with neon lights"
+    },
+    "tags": [
+      "flux2",
+      "img2img",
+      "fast",
+      "turbo",
+      "20GB"
+    ],
+    "experimental": false
+  },
+  {
+    "id": "wan22-i2v",
+    "name": "Wan 2.2 Image-to-Video",
+    "description": "Генерация видео из изображения. Wan 2.2 I2V 14B. Двухпроходный сэмплинг high+low noise.",
+    "category": "video",
+    "gpu": "H200",
+    "model": "Wan 2.2 I2V 14B FP8",
+    "avg_time_sec": 45,
+    "cost_per_run": 0.03,
+    "vast_template_hash": "e82521203035e2c8bd124820eeb49f83",
+    "workflow_file": "wan22_i2v.json",
+    "setup_script": "wan22_v2.sh",
+    "provisioning_url": "https://raw.githubusercontent.com/martinroot/template_vast/main/wan22_i2v.sh",
+    "disk_gb": 60,
+    "weights": [
+      "text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+      "vae/wan_2.1_vae.safetensors",
+      "diffusion_models/wan2.2_i2v_low_noise_14B_fp8_scaled.safetensors",
+      "diffusion_models/wan2.2_i2v_high_noise_14B_fp8_scaled.safetensors",
+      "loras/wan2.2_i2v_lightx2v_4steps_lora_v1_low_noise.safetensors",
+      "loras/wan2.2_i2v_lightx2v_4steps_lora_v1_high_noise.safetensors"
+    ],
+    "params": {
+      "width": 640,
+      "height": 640,
+      "length": 81,
+      "fps": 16,
+      "steps": 4,
+      "cfg": 1,
+      "sampler": "euler",
+      "scheduler": "simple",
+      "shift": 5.0,
+      "split_step": 2,
+      "lora_enabled": true
+    },
+    "demo": {
+      "before_image": "https://images.unsplash.com/photo-1529778873920-4da4926a72c2?w=512",
+      "after_video": null,
+      "prompt": "cat slowly turns head and blinks, cinematic"
+    },
+    "tags": [
+      "i2v",
+      "wan2.2",
+      "14B",
+      "fp8",
+      "comfyui",
+      "4step-lora"
+    ],
+    "experimental": false
+  },
+  {
+    "id": "wan22-t2v",
+    "name": "Wan 2.2 Text-to-Video",
+    "description": "Генерация видео из текстового промпта. Wan 2.2 T2V 14B с LightX2V LoRA.",
+    "category": "video",
+    "gpu": "H200",
+    "model": "Wan 2.2 T2V 14B FP8 + LoRA",
+    "avg_time_sec": 35,
+    "cost_per_run": 0.02,
+    "vast_template_hash": "e82521203035e2c8bd124820eeb49f83",
+    "workflow_file": null,
+    "setup_script": "wan22.sh",
+    "weights": [
+      "text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+      "vae/wan_2.1_vae.safetensors",
+      "diffusion_models/wan2.2_t2v_low_noise_14B_fp8_scaled.safetensors",
+      "diffusion_models/wan2.2_t2v_high_noise_14B_fp8_scaled.safetensors",
+      "loras/wan2.2_t2v_lightx2v_4steps_lora_v1.1_high_noise.safetensors",
+      "loras/wan2.2_t2v_lightx2v_4steps_lora_v1.1_low_noise.safetensors"
+    ],
+    "params": {
+      "width": 640,
+      "height": 640,
+      "length": 81,
+      "fps": 16,
+      "steps": 4,
+      "cfg": 1,
+      "sampler": "euler",
+      "scheduler": "simple"
+    },
+    "demo": {
+      "before_image": null,
+      "after_video": null,
+      "prompt": "a beautiful sunset over the ocean, cinematic"
+    },
+    "tags": [
+      "t2v",
+      "wan2.2",
+      "14B",
+      "fp8",
+      "comfyui"
+    ],
+    "experimental": true
+  },
+  {
+    "id": "flux2-wan22-i2v",
+    "name": "Flux 2 img2img + Wan 2.2 I2V",
+    "description": "Двухступенчатый пайплайн: Flux 2 Dev перерисовывает фото (img2img с reference latent), затем Wan 2.2 I2V анимирует результат в видео. ~60GB весов.",
+    "category": "video",
+    "gpu": "H200",
+    "model": "Flux 2 Dev FP8 + Turbo LoRA → Wan 2.2 I2V 14B + LightX2V",
+    "avg_time_sec": 90,
+    "cost_per_run": 0.06,
+    "vast_template_hash": "b0eb4a914bfe6083ab77ae93dd969f48",
+    "workflow_file": "image_flux2_60GB.json",
+    "setup_script": "flux2_wan22_i2v.sh",
+    "provisioning_url": "https://raw.githubusercontent.com/martinroot/template_vast/main/flux2_wan22_i2v.sh",
+    "disk_gb": 100,
+    "weights": [
+      "text_encoders/mistral_3_small_flux2_bf16.safetensors",
+      "diffusion_models/flux2_dev_fp8mixed.safetensors",
+      "vae/flux2-vae.safetensors",
+      "loras/Flux_2-Turbo-LoRA_comfyui.safetensors",
+      "text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+      "vae/wan_2.1_vae.safetensors",
+      "diffusion_models/wan2.2_i2v_low_noise_14B_fp8_scaled.safetensors",
+      "diffusion_models/wan2.2_i2v_high_noise_14B_fp8_scaled.safetensors",
+      "loras/wan2.2_i2v_lightx2v_4steps_lora_v1_low_noise.safetensors",
+      "loras/wan2.2_i2v_lightx2v_4steps_lora_v1_high_noise.safetensors"
+    ],
+    "params": {
+      "stage1_flux2": {
+        "sampler": "euler",
+        "guidance": 4,
+        "turbo_lora_enabled": false,
+        "steps_turbo": 8,
+        "steps_normal": 20,
+        "megapixels": 1
+      },
+      "stage2_wan22": {
+        "width": 496,
+        "height": 1008,
+        "length": 81,
+        "fps": 16,
+        "steps": 4,
+        "cfg": 1,
+        "sampler": "euler",
+        "scheduler": "simple",
+        "shift": 5.0,
+        "split_step": 2,
+        "lora_enabled": true
+      }
+    },
+    "demo": {
+      "before_image": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=512",
+      "after_video": null,
+      "prompt": "girl slowly turns head and smiles, cinematic night city background with fireworks"
+    },
+    "tags": [
+      "flux2",
+      "i2v",
+      "img2img",
+      "wan2.2",
+      "combo",
+      "14B",
+      "60GB"
+    ],
+    "experimental": true
+  },
+  {
+    "id": "flux2-wan22-i2v-foley",
+    "name": "Flux 2 + Wan 2.2 I2V + Audio (Foley)",
+    "description": "Трёхступенчатый пайплайн: Flux 2 Dev перерисовывает фото, Wan 2.2 I2V анимирует в видео, HunyuanFoley генерирует звук. ~72GB весов.",
+    "category": "video",
+    "gpu": "H200",
+    "model": "Flux 2 Dev FP8 + Turbo LoRA → Wan 2.2 I2V 14B + LightX2V → HunyuanFoley",
+    "avg_time_sec": 150,
+    "cost_per_run": 0.1,
+    "vast_template_hash": "a7c3f1d2e8b04956c1d3a2f7e9b81234",
+    "workflow_file": "flux2_wan22_i2v_foley.json",
+    "setup_script": "flux2_wan22_i2v_foley.sh",
+    "provisioning_url": "https://raw.githubusercontent.com/martinroot/template_vast/main/flux2_wan22_i2v_foley.sh",
+    "disk_gb": 120,
+    "weights": [
+      "text_encoders/mistral_3_small_flux2_bf16.safetensors",
+      "diffusion_models/flux2_dev_fp8mixed.safetensors",
+      "vae/flux2-vae.safetensors",
+      "loras/Flux_2-Turbo-LoRA_comfyui.safetensors",
+      "text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+      "vae/wan_2.1_vae.safetensors",
+      "diffusion_models/wan2.2_i2v_low_noise_14B_fp8_scaled.safetensors",
+      "diffusion_models/wan2.2_i2v_high_noise_14B_fp8_scaled.safetensors",
+      "loras/wan2.2_i2v_lightx2v_4steps_lora_v1_low_noise.safetensors",
+      "loras/wan2.2_i2v_lightx2v_4steps_lora_v1_high_noise.safetensors",
+      "hunyuanfoley/hunyuanvideo_foley.pth",
+      "hunyuanfoley/vae_128d_48k.pth",
+      "hunyuanfoley/synchformer_state_dict.pth",
+      "hunyuanfoley/config.yaml"
+    ],
+    "params": {
+      "stage1_flux2": {
+        "sampler": "euler",
+        "guidance": 4,
+        "turbo_lora_enabled": false,
+        "steps_turbo": 8,
+        "steps_normal": 20,
+        "megapixels": 1
+      },
+      "stage2_wan22": {
+        "width": 496,
+        "height": 1008,
+        "length": 81,
+        "fps": 16,
+        "steps": 4,
+        "cfg": 1,
+        "sampler": "euler",
+        "scheduler": "simple",
+        "shift": 5.0,
+        "split_step": 2,
+        "lora_enabled": true
+      },
+      "stage3_foley": {
+        "fps": 16.0,
+        "duration": 5.1,
+        "cfg_scale": 5.0,
+        "steps": 60,
+        "sampler": "euler"
+      }
+    },
+    "demo": {
+      "before_image": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=512",
+      "after_video": null,
+      "prompt": "girl slowly turns head and smiles, cinematic night city background with fireworks",
+      "foley_prompt": "ambient city sounds, distant fireworks explosions, gentle wind"
+    },
+    "tags": [
+      "flux2",
+      "i2v",
+      "img2img",
+      "wan2.2",
+      "foley",
+      "audio",
+      "combo",
+      "14B",
+      "72GB"
+    ],
+    "experimental": true
+  }
+]

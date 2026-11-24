@@ -1,0 +1,101 @@
+[
+ {
+  "id": "tpl-outfit",
+  "name": "Смена наряда",
+  "type": "img2img",
+  "template_id": "tpl-outfit",
+  "source_image": "/showcase/test_1783605158.jpg",
+  "generated_image": "/showcase/undress_result_001.png",
+  "categories": [
+   "outfit"
+  ],
+  "tags": [
+   "outfit"
+  ],
+  "likes": 12,
+  "created_at": 1794502399
+ },
+ {
+  "id": "tpl-beauty",
+  "name": "Бьюти-ретушь",
+  "type": "img2img",
+  "template_id": "tpl-beauty",
+  "source_image": "/showcase/test_1783605158.jpg",
+  "generated_image": "/showcase/undress_result_001.png",
+  "categories": [
+   "beauty"
+  ],
+  "tags": [
+   "beauty",
+   "glam"
+  ],
+  "likes": 9,
+  "created_at": 1794502339
+ },
+ {
+  "id": "tpl-anime",
+  "name": "Аниме-стиль",
+  "type": "img2img",
+  "template_id": "tpl-anime",
+  "source_image": "/showcase/demo_girl_new.jpg",
+  "generated_image": "/showcase/gen_1783626085_44d7e7.png",
+  "categories": [
+   "cartoon"
+  ],
+  "tags": [
+   "anime",
+   "cartoon"
+  ],
+  "likes": 21,
+  "created_at": 1794502279
+ },
+ {
+  "id": "tpl-fantasy",
+  "name": "Фэнтези-фон",
+  "type": "img2img",
+  "template_id": "tpl-fantasy",
+  "source_image": "/showcase/demo_girl_new.jpg",
+  "generated_image": "/showcase/gen_1783626085_44d7e7.png",
+  "categories": [
+   "fantasy"
+  ],
+  "tags": [
+   "fantasy"
+  ],
+  "likes": 7,
+  "created_at": 1794502219
+ },
+ {
+  "id": "tpl-style",
+  "name": "Стиль-трансфер",
+  "type": "img2img",
+  "template_id": "tpl-style",
+  "source_image": "/showcase/test_1783605158.jpg",
+  "generated_image": "/showcase/undress_result_001.png",
+  "categories": [
+   "style_transfer"
+  ],
+  "tags": [
+   "style"
+  ],
+  "likes": 5,
+  "created_at": 1794502159
+ },
+ {
+  "id": "tpl-glam",
+  "name": "Гламур-образ",
+  "type": "img2img",
+  "template_id": "tpl-glam",
+  "source_image": "/showcase/demo_girl_new.jpg",
+  "generated_image": "/showcase/gen_1783626085_44d7e7.png",
+  "categories": [
+   "beauty"
+  ],
+  "tags": [
+   "glam",
+   "beauty"
+  ],
+  "likes": 14,
+  "created_at": 1794502099
+ }
+]

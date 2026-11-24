@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+*.log
+click_log.txt
+*.bak
+*.bak-*
+/env.php
+/.env
+/gpu-portal/.env
+inbox/
+gen_results/
+gpu-portal/results/
+gpu-portal/uploads/

@@ -1,0 +1,47 @@
+[
+  {
+    "id": "style_transfer",
+    "name": "Стиль",
+    "icon": "bi-palette"
+  },
+  {
+    "id": "face_swap",
+    "name": "Лицо",
+    "icon": "bi-person-bounding-box"
+  },
+  {
+    "id": "outfit",
+    "name": "Одежда",
+    "icon": "bi-bag"
+  },
+  {
+    "id": "background",
+    "name": "Фон",
+    "icon": "bi-image"
+  },
+  {
+    "id": "age",
+    "name": "Возраст",
+    "icon": "bi-hourglass-split"
+  },
+  {
+    "id": "cartoon",
+    "name": "Мультяшный",
+    "icon": "bi-stars"
+  },
+  {
+    "id": "beauty",
+    "name": "Бьюти",
+    "icon": "bi-gem"
+  },
+  {
+    "id": "fantasy",
+    "name": "Фэнтези",
+    "icon": "bi-magic"
+  },
+  {
+    "id": "other",
+    "name": "Разное",
+    "icon": "bi-three-dots"
+  }
+]
