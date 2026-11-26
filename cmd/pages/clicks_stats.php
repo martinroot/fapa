@@ -107,6 +107,18 @@ if ($resCamp) {
     }
     $resCamp->free();
 }
+
+// Воронка по campaigns из Kadam 973225 и legacy tracker 1291 (последние 24 часа)
+$sqlFunnel = "
+    SELECT COUNT(*) AS clicks,
+           SUM(js = 1) AS js_ok,
+           SUM(lead1 > 0) AS lead1, SUM(lead2 > 0) AS lead2,
+           SUM(lead3 > 0) AS lead3, SUM(lead4 > 0) AS lead4, SUM(lead5 > 0) AS lead5,
+           COALESCE(SUM(cost), 0) AS cost
+    FROM clicks
+    WHERE campaign_id IN ('973225','1291') AND ts >= NOW() - INTERVAL 1 DAY
+";
+$rowFunnel = $conn->query($sqlFunnel)->fetch_assoc() ?: [];
 ?>
 
 <h2 class="mb-4">Clicks stats</h2>
@@ -293,6 +305,31 @@ if ($resCamp) {
                 <?php endif; ?>
                 </tbody>
             </table>
+        </div>
+    </div>
+</div>
+
+
+<!-- Воронка Kadam 973225 / tracker 1291 -->
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title">Воронка Kadam 973225 / tracker 1291 (24ч)</h5>
+        <div class="d-flex flex-wrap gap-3">
+            <?php foreach ([
+                'Клики'  => 'clicks', 'JS'    => 'js_ok',
+                'Lead1'  => 'lead1',  'Lead2' => 'lead2',
+                'Lead3'  => 'lead3',  'Lead4' => 'lead4',
+                'Lead5'  => 'lead5',  'Cost'  => 'cost',
+            ] as $label => $key): ?>
+                <div class="border rounded px-3 py-2">
+                    <div class="small text-muted"><?php echo h($label); ?></div>
+                    <div class="fw-bold">
+                        <?php echo $key === 'cost'
+                            ? number_format((float)($rowFunnel[$key] ?? 0), 4, '.', ' ')
+                            : (int)($rowFunnel[$key] ?? 0); ?>
+                    </div>
+                </div>
+            <?php endforeach; ?>
         </div>
     </div>
 </div>

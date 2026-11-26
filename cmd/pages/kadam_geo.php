@@ -16,12 +16,14 @@ function req_param(string $key, $default = null) {
     return $_REQUEST[$key] ?? $default;
 }
 
-// ------------------ CONFIG Kadam ------------------
+// ------------------ CONFIG Kadam (single source: kadam_config.php) ------------------
+require_once __DIR__ . '/../kadam_config.php';
+[$_kgBearer, $_kgApp, $_kgClient] = fapa_kadam_token();
 $KADAM = [
-    'app_id'     => 141381,
-    'client_id'  => 141381,
-    'bearer'     => '532568fbfb2630a8af12c1d00889c3bf',
-    'campaignId' => 862575,   // VPN-кампания
+    'app_id'     => $_kgApp,
+    'client_id'  => $_kgClient,
+    'bearer'     => $_kgBearer,
+    'campaignId' => FAPA_KADAM_CAMPAIGN_ID,
 ];
 
 const KG_MIN_BID = 0.00011;
@@ -42,36 +44,17 @@ $minL4Pct  = 0.3;
 
 // ------------------ Kadam HTTP helper ------------------
 function kadam_post_update_campaign(array $data, array $cfg, int $timeout = 30): array {
-    $url = 'https://api.kadam.net/ads.campaigns.update';
-
-    $fields = [
-        'app_id' => $cfg['app_id'],
-        'data'   => json_encode($data, JSON_UNESCAPED_UNICODE),
-    ];
-
-    $ch = curl_init($url);
-    curl_setopt_array($ch, [
-        CURLOPT_POST           => true,
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_HTTPHEADER     => [
-            'Authorization: Bearer ' . $cfg['bearer'],
-            'Content-Type: application/x-www-form-urlencoded; charset=utf-8',
-        ],
-        CURLOPT_POSTFIELDS     => http_build_query($fields, '', '&'),
-        CURLOPT_TIMEOUT        => $timeout,
-    ]);
-    $raw  = curl_exec($ch);
-    $http = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    $err  = curl_error($ch);
-    curl_close($ch);
-
+    // Old API ads.campaigns.update was shut down 2026-11-16. New API v1 has no
+    // countryTarget write; per-site bids use PUT /stats/sites/bids instead.
+    // Keep this page read-only until the owner approves a new write design.
     return [
-        'http' => $http,
-        'err'  => $err ?: null,
-        'raw'  => $raw,
-        'json' => json_decode((string)$raw, true),
+        'http'  => 0,
+        'error' => 'countryTarget writes are not supported by Kadam API v1',
+        'raw'   => null,
+        'json'  => null,
     ];
 }
+
 
 // ------------------ dates (для BL-статистики) ------------------
 $today   = (new DateTime('today'))->format('Y-m-d');
@@ -392,7 +375,7 @@ foreach ($planByCc as $cc => $plan) {
     ];
 }
 
-if ($countryTarget) {
+if ($countryTarget && isset($_POST['kadam_geo_apply'])) {
     $payload = [
         'client_id'     => $KADAM['client_id'],
         'campaign_id'   => $KADAM['campaignId'],
@@ -599,7 +582,7 @@ foreach ($geoStatsByCc as $st) if (!empty($st['is_bad'])) $badCount++;
     </div>
 </div>
 
-<h3 class="mt-4 mb-2">Ответ Kadam (ads.campaigns.update)</h3>
+<h3 class="mt-4 mb-2">Ответ Kadam (API v1: countryTarget write не поддерживается)</h3>
 <pre class="kadam-json"><?=h(json_encode($kadamUpdateResult, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT))?></pre>
 
 <script>

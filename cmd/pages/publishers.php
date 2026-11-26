@@ -5,11 +5,11 @@ declare(strict_types=1);
 
 $conn = db_connect($DB_NAME);
 
-// ---------- CONFIG: tracker/Kadam ----------
-$TRACKER_CAMP_ID   = 16;        // локальный camp_id в tracker/fapaio
-$KADAM_CAMPAIGN_ID = 862575;    // ID кампании в Kadam
-$KADAM_APP_ID      = 141381;    // app_id
-$KADAM_BEARER      = '532568fbfb2630a8af12c1d00889c3bf'; // bearer, как в auto_geo_pub.php
+// ---------- CONFIG: tracker/Kadam (single source: kadam_config.php) ----------
+require_once __DIR__ . '/../kadam_config.php';
+[$KADAM_BEARER, $KADAM_APP_ID, $_fapaKadamClient] = fapa_kadam_token();
+$KADAM_CAMPAIGN_ID = FAPA_KADAM_CAMPAIGN_ID;
+$TRACKER_CAMP_ID   = FAPA_TRACKER_CAMP_ID;
 $BL_SOURCE_ID      = 'fapaio';  // что писать в black_list_ts.source_id
 
 // ---------- ensure black_list_ts exists ----------
@@ -30,8 +30,9 @@ function req_param(string $key, $default = null) {
     return $_REQUEST[$key] ?? $default;
 }
 
-function kadam_post_form(string $url, array $fields, string $bearer, int $timeout = 30, int $retries = 2): array {
-    $payload = http_build_query($fields, '', '&');
+function kadam_post_form(string $path, array $body, string $bearer, int $timeout = 30, int $retries = 2): array {
+    $payload = json_encode($body, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+    $url = 'https://partners.kadam.net/api/v1' . $path;
 
     for ($i = 0; $i <= $retries; $i++) {
         $ch = curl_init($url);
@@ -40,7 +41,7 @@ function kadam_post_form(string $url, array $fields, string $bearer, int $timeou
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_HTTPHEADER     => [
                 'Authorization: Bearer ' . $bearer,
-                'Content-Type: application/x-www-form-urlencoded; charset=utf-8',
+                'Content-Type: application/json',
             ],
             CURLOPT_POSTFIELDS     => $payload,
             CURLOPT_TIMEOUT        => $timeout,
@@ -48,29 +49,16 @@ function kadam_post_form(string $url, array $fields, string $bearer, int $timeou
         $raw  = curl_exec($ch);
         $http = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $err  = curl_error($ch);
-        curl_close($ch);
 
-        // на 429/503 пробуем ретраи
         if (in_array($http, [429, 503], true) && $i < $retries) {
             usleep((int)(pow(2, $i) * 250000));
             continue;
         }
-
-        return [
-            'http'  => $http,
-            'error' => $err ?: null,
-            'raw'   => $raw,
-            'json'  => json_decode((string)$raw, true),
-        ];
+        return ['http'=>$http, 'error'=>$err ?: null, 'raw'=>$raw, 'json'=>json_decode((string)$raw, true)];
     }
-
-    return [
-        'http'  => 0,
-        'error' => 'retry_exhausted',
-        'raw'   => null,
-        'json'  => null,
-    ];
+    return ['http'=>0, 'error'=>'retry_exhausted', 'raw'=>null, 'json'=>null];
 }
+
 
 // ---------- фильтры / критерии ----------
 $today   = (new DateTime('today'))->format('Y-m-d');
@@ -338,18 +326,13 @@ foreach ($rows as $idx => $r) {
 }
 
 // 6) Kadam: полный update black_list
-if ($KADAM_CAMPAIGN_ID && $KADAM_APP_ID && $KADAM_BEARER && $allBL) {
-    $data = [
-        'client_id'   => $KADAM_APP_ID,
-        'campaign_id' => $KADAM_CAMPAIGN_ID,
-        'black_list'  => $allBL,
-    ];
-
+if (isset($_POST['kadam_bl_apply']) && $KADAM_CAMPAIGN_ID && $KADAM_APP_ID && $KADAM_BEARER && $allBL) {
+    // New API v1: POST /stats/sites/block. Only adds sites; unblock is a separate endpoint.
     $resp = kadam_post_form(
-        'https://api.kadam.net/ads.campaigns.update',
+        '/stats/sites/block',
         [
-            'app_id' => $KADAM_APP_ID,
-            'data'   => json_encode($data, JSON_UNESCAPED_UNICODE),
+            'campaignIds' => [$KADAM_CAMPAIGN_ID],
+            'zones'       => array_values(array_map('intval', $allBL)),
         ],
         $KADAM_BEARER
     );
@@ -564,6 +547,14 @@ if ($KADAM_CAMPAIGN_ID && $KADAM_APP_ID && $KADAM_BEARER && $allBL) {
     </table>
   </div>
 </div>
+
+<form method="post" class="mb-3">
+  <button type="submit" name="kadam_bl_apply" value="1" class="btn btn-sm btn-danger"
+          onclick="return confirm('Отправить чёрный список в Kadam 973225?');">
+    Отправить BL в Kadam 973225
+  </button>
+  <small class="text-muted ms-2">Без нажатия — только чтение, запрос в Kadam не уходит</small>
+</form>
 
 <?php if ($kadamUpdateResult !== null): ?>
   <div class="card mt-3">
