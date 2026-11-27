@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GPU Portal</title>
+<style>
+body{margin:0;background:#0d0f14;color:#e8e9ef;font:15px/1.5 system-ui,sans-serif}
+header{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;background:#141720;border-bottom:1px solid #292d3a}
+header b{font-size:18px}button{cursor:pointer}
+main{max-width:1100px;margin:0 auto;padding:28px 20px}
+.card{background:#171a23;border:1px solid #2a2e3b;border-radius:12px;padding:20px;margin-bottom:18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
+.tpl{background:#10131a;border:1px solid #2a2e3b;border-radius:9px;padding:10px;cursor:pointer}
+.tpl.on{border-color:#7c6cff}
+.tpl small{display:block;color:#979db0}
+label{display:block;margin:12px 0 5px;color:#b9bfd0;font-size:13px}
+input,textarea,select{width:100%;box-sizing:border-box;padding:10px;border-radius:8px;border:1px solid #34394a;background:#10131a;color:#fff}
+.btn{padding:11px 18px;border:0;border-radius:8px;background:#7c6cff;color:#fff;font-weight:700}
+.err{color:#ff7b8a}.muted{color:#969cb0;font-size:13px}
+#result img{max-width:100%;border-radius:8px;margin-top:10px}
+</style>
+</head>
+<body>
+<header><b>🎴 GPU Portal</b><span><span id="who" class="muted"></span> <button class="btn" id="out">Выйти</button></span></header>
+<main>
+  <div class="card">
+    <h2 style="margin-top:0">Генерация</h2>
+    <div class="muted">Выбери шаблон, загрузи изображение и задай промпт.</div>
+    <div class="grid" id="tpls" style="margin:14px 0"></div>
+    <form id="form">
+      <label>Изображение</label><input type="file" name="image" accept="image/*" required>
+      <label>Промпт</label><textarea name="prompt" rows="3"></textarea>
+      <input type="hidden" name="template_id" id="tpl_id">
+      <button class="btn" type="submit" style="margin-top:14px">Сгенерировать</button>
+    </form>
+    <div id="status" class="muted" style="margin-top:12px"></div>
+    <div id="result"></div>
+  </div>
+  <div class="card"><h2 style="margin-top:0">Последние задачи</h2><div id="jobs" class="muted">загрузка…</div></div>
+</main>
+<script>
+const api = p => '/gpu' + p;
+async function j(p, opt) {
+  const r = await fetch(api(p), Object.assign({credentials:'same-origin'}, opt||{}));
+  if (r.status === 401) { location.href='/gpu/login'; throw new Error('unauthorized'); }
+  const d = await r.json().catch(()=>({}));
+  if (!r.ok) throw new Error(d.error || ('HTTP '+r.status));
+  return d;
+}
+document.getElementById('out').onclick = async () => { await j('/api/logout',{method:'POST'}); location.href='/gpu/login'; };
+async function load() {
+  const d = await j('/api/templates');
+  const list = d.templates || [];
+  document.getElementById('who').textContent = list.length + ' шаблон(ов)';
+  document.getElementById('tpls').innerHTML = list.map(t =>
+    `<div class="tpl" data-id="${t.id}"><b>${t.name||t.id}</b><small>${t.category||''}</small></div>`).join('');
+  document.querySelectorAll('.tpl').forEach(el => el.onclick = () => {
+    document.querySelectorAll('.tpl').forEach(x=>x.classList.remove('on'));
+    el.classList.add('on');
+    document.getElementById('tpl_id').value = el.dataset.id;
+  });
+  const jd = await j('/api/jobs');
+  document.getElementById('jobs').textContent = (jd.jobs||[]).slice(0,10).map(x=>
+    `${x.job_id} — ${x.status}`).join('\n') || 'нет задач';
+}
+document.getElementById('form').onsubmit = async ev => {
+  ev.preventDefault();
+  const st=document.getElementById('status'), res=document.getElementById('result');
+  st.className='muted'; st.textContent='Отправка…'; res.innerHTML='';
+  const fd = new FormData(ev.target);
+  try {
+    const d = await j('/api/showcase/generate',{method:'POST',body:fd});
+    st.textContent='Задача ' + d.job_id + ' — ' + d.status;
+    const poll = async () => {
+      const x = await j('/api/jobs/' + encodeURIComponent(d.job_id));
+      st.textContent = 'Статус: ' + x.status;
+      if (['done','succeeded','failed','error'].includes(x.status)) {
+        if (x.status==='done') {
+          const u = x.result_url || x.output_url || x.url || ((x.result||{}).outputs||[])[0];
+          if (u) res.innerHTML = '<a href="'+u+'" target="_blank">Открыть результат</a>' +
+            (/(\.png|\.jpg|\.jpeg|\.webp)/i.test(u) ? '<br><img src="'+u+'">' : '');
+        } else { st.className='err'; }
+        return;
+      }
+      setTimeout(poll, 4000);
+    };
+    poll();
+  } catch(e) { st.className='err'; st.textContent=e.message; }
+};
+load().catch(e=>{ document.getElementById('status').className='err'; document.getElementById('status').textContent=e.message; });
+</script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GPU Portal — вход</title>
+<style>
+body{margin:0;min-height:100vh;display:grid;place-items:center;background:#0d0f14;color:#e8e9ef;font:15px/1.5 system-ui,sans-serif}
+.box{width:min(360px,90vw);background:#171a23;border:1px solid #2a2e3b;border-radius:14px;padding:28px;box-shadow:0 20px 60px #0008}
+h1{margin:0 0 4px;font-size:22px}p.sub{margin:0 0 22px;color:#969cb0;font-size:13px}
+label{display:block;margin:12px 0 5px;color:#b9bfd0;font-size:13px}
+input{width:100%;box-sizing:border-box;padding:11px 12px;border-radius:9px;border:1px solid #34394a;background:#10131a;color:#fff;outline:none}
+input:focus{border-color:#7c6cff}
+button{margin-top:20px;width:100%;padding:12px;border:0;border-radius:9px;background:#7c6cff;color:#fff;font-weight:700;cursor:pointer}
+button:disabled{opacity:.5;cursor:wait}
+.err{margin-top:14px;color:#ff7b8a;font-size:13px;min-height:18px}
+</style>
+</head>
+<body>
+<div class="box">
+  <h1>🎴 GPU Portal</h1>
+  <p class="sub">Вход в панель генераций fapa.cam</p>
+  <form id="f">
+    <label for="u">Логин</label><input id="u" name="u" autocomplete="username" required>
+    <label for="p">Пароль</label><input id="p" name="p" type="password" autocomplete="current-password" required>
+    <button type="submit" id="b">Войти</button>
+  </form>
+  <div class="err" id="e"></div>
+</div>
+<script>
+document.getElementById('f').addEventListener('submit', async ev => {
+  ev.preventDefault();
+  const b = document.getElementById('b'), e = document.getElementById('e');
+  e.textContent = ''; b.disabled = true;
+  try {
+    const r = await fetch('/gpu/api/login', {
+      method:'POST', headers:{'Content-Type':'application/json'}, credentials:'same-origin',
+      body: JSON.stringify({username:document.getElementById('u').value.trim(),
+                            password:document.getElementById('p').value})
+    });
+    const d = await r.json().catch(()=>({}));
+    if (!r.ok || !d.ok) throw new Error(d.error || 'Неверный логин или пароль');
+    location.href = '/gpu/';
+  } catch (ex) { e.textContent = ex.message; b.disabled = false; }
+});
+</script>
+</body>
+</html>
